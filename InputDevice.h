@@ -7,6 +7,8 @@ class InputDevice: public cl_base{
 
     public:
         InputDevice(cl_base* parent, std::string name);
+
+        void RequestInputHandler(std::string &result);
 };
 
 #endif

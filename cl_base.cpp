@@ -290,7 +290,7 @@ void cl_base::send_data(SIGNAL_POINTER signal, std::string message)
 {
 	if(status==0)return;
 	std::cout<<"\n";
-	(this->*signal)(message);
+	if(signal!=nullptr)(this->*signal)(message);
 	for (s_OBJECT_CHAT* link : this->links)
 	{
 		if (link->p_signal == signal)

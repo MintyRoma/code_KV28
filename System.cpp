@@ -14,8 +14,19 @@ void System::build_tree_objects()
     cl_base* changedr = new ChangeDrawer(ctrldev,"Change Drawer");
     cl_base* tckprint = new TicketPrinter(ctrldev, "Ticket Printer");
 
+    inptdev->set_status(1);
+    screendev->set_status(1);
+    ctrldev->set_status(1);
+    cashdr->set_status(1);
+    changedr->set_status(1);
+    tckprint->set_status(1);
+
+    //Preparation
     
-    
+    this->create_link(GET_SIGNAL_POINTER(TicketPrinter::PrepareSessions),nullptr,tckprint);
+    tckprint->create_link(nullptr,GET_HANDLER_POINTER(ScreenDevice::PrintInformation),screendev);
+    //Init
+    this->send_data(GET_SIGNAL_POINTER(TicketPrinter::PrepareSessions),"");
 }
 
 int System::exec_app()

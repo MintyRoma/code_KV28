@@ -9,6 +9,8 @@ class ScreenDevice: public cl_base{
 
     public:
         ScreenDevice(cl_base* parent, std::string name);
+
+        void PrintInformation(std::string &info);
 };
 
 #endif

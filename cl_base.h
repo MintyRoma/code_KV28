@@ -15,6 +15,7 @@ typedef void (cl_base::* HANDLER_POINTER)(std::string);
 
 struct s_OBJECT_CHAT
 {
+	std::string name = "NULL";
 	SIGNAL_POINTER p_signal;
 	HANDLER_POINTER p_handler;
 	cl_base* target;

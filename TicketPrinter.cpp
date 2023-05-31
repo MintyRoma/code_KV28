@@ -5,7 +5,7 @@ TicketPrinter::TicketPrinter(cl_base* p_head_object, std::string name) :cl_base(
 	
 }
 
-void TicketPrinter::PrepareSessions()
+void TicketPrinter::PrepareSessions(std::string &message)
 {
 	int amount = 0;
 	std::cin>>amount;
@@ -19,5 +19,5 @@ void TicketPrinter::PrepareSessions()
 	{
 		std::cin>>Timetable[i].price;
 	}
+	send_data(nullptr,"Ready to work");
 }
-

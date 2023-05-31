@@ -13,6 +13,7 @@ class System: public cl_base
 		//Methods
 		void build_tree_objects();
 		int exec_app();
+		void SignalExecutor();
 };
 
 #endif
