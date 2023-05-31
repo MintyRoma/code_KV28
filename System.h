@@ -9,7 +9,7 @@ class System: public cl_base
 	
 	public:
 		//Constructor
-		System(cl_base* parent, std::string name);
+		System(cl_base* parent, std::string name="System");
 		//Methods
 		void build_tree_objects();
 		int exec_app();

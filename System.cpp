@@ -15,6 +15,7 @@ void System::build_tree_objects()
     cl_base* tckprint = new TicketPrinter(ctrldev, "Ticket Printer");
 
     
+    
 }
 
 int System::exec_app()
