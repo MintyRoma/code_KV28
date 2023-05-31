@@ -5,7 +5,7 @@ ScreenDevice::ScreenDevice(cl_base* parent, std::string name):cl_base(parent,nam
     
 }
 
-void ScreenDevice::PrintInformation(std::string &info)
+void ScreenDevice::PrintInformation(std::string info)
 {
     std::cout<<info;
 }

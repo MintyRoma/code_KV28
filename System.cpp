@@ -24,14 +24,14 @@ void System::build_tree_objects()
     //Preparation
     
     this->create_link(GET_SIGNAL_POINTER(TicketPrinter::PrepareSessions),nullptr,tckprint);
-    tckprint->create_link(nullptr,GET_HANDLER_POINTER(ScreenDevice::PrintInformation),screendev);
+    tckprint->create_link(GET_SIGNAL_POINTER(TicketPrinter::PrepareSessions),GET_HANDLER_POINTER(ScreenDevice::PrintInformation),screendev);
     //Init
-    this->send_data(GET_SIGNAL_POINTER(TicketPrinter::PrepareSessions),"");
 }
 
 int System::exec_app()
 {
     this->cl_base::print_tree();
+    return 0;
 }
 
 

@@ -12,11 +12,14 @@ struct Session
 class TicketPrinter: public cl_base
 {
 	private:
-		std::vector<Session> Timetable;
+		//Vars
+		std::vector <Session*> Timetable;
+		//Methods
+
 	public:
 		TicketPrinter(cl_base* p_head_object, std::string name);
 		//Methods
-		void PrepareSessions(std::string & message);	
+		void PrepareSessions();	
 		//Handlers
 		
 		//Signals

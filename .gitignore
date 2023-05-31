@@ -1,3 +1,5 @@
 build/
 .vscode/
 build/Debug/outDebug.exe
+.vs/
+x64/
