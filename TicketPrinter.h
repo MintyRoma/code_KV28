@@ -19,11 +19,10 @@ class TicketPrinter: public cl_base
 	public:
 		TicketPrinter(cl_base* p_head_object, std::string name);
 		//Methods
-		void PrepareSessions();	
+		// 
 		//Handlers
 		
 		//Signals
-		void ReadyInvoke();
 };
 
 #endif
