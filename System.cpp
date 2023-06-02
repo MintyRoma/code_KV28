@@ -20,55 +20,65 @@ void System::build_tree_objects()
     
     cl_base* cashdr = new CashDrawer(ctrldev, "Cash Drawer");
 
-    inptdev->set_status(1);
-    screendev->set_status(1);
-    ctrldev->set_status(1);
-    cashdr->set_status(1);
-    changedr->set_status(1);
-    tckprint->set_status(1);
-
-    //Linking
-    this->create_link(GET_SIGNAL_POINTER(System::ReadyStatus), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+    //Preparation
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(TicketPrinter::InitSessions), tckprint, "InitSessions");
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(TicketPrinter::FillSeats), tckprint, "FillSeats");
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(TicketPrinter::FillPrice), tckprint, "FillPrice");
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(ChangeDrawer::FillChange), changedr, "FillChange");
     
-    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::RequestInputSignal), GET_HANDLER_POINTER(System::PowerOffHandler), this);
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(System::PowerOff), this); //Global Scope
+    this->create_link(GET_SIGNAL_POINTER(System::PowerOffSignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev, "PowerOff");
+    
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(ChangeDrawer::GetStatusHandler), changedr, "");
+    changedr->create_link(GET_SIGNAL_POINTER(ChangeDrawer::StatusSignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev, "");
 
-
-    std::string ready_proof;
-    std::cin.ignore();
-    getline(std::cin, ready_proof);
-    if (ready_proof != "End of settings")std::cout<<ready_proof;
-        
-    this->send_data(GET_SIGNAL_POINTER(System::ReadyStatus), "");
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(CashDrawer::GetStatusHandler), cashdr, "");
+    cashdr->create_link(GET_SIGNAL_POINTER(CashDrawer::StatusSignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev, "");
+    
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(System::ReadySetHandler), this, "Ready");
+    this->create_link(GET_SIGNAL_POINTER(System::ReadySignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev,"");
+    //Init
+    inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "", "InitSessions");
+    inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "", "FillSeats");
+    inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "", "FillPrice");
+    inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "", "FillChange");
+    inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "", "Ready");
 }
 
 int System::exec_app()
 {
-    cl_base* inptdev = find_by_filter("//Input Device");
-    cl_base* screendev = find_by_filter("//Screen Device");
-    cl_base* ctrldev = find_by_filter("//Controller Device");
-    cl_base* tckprint = find_by_filter("//Ticket Printer");
-    cl_base* changedr = find_by_filter("//Change Drawer");
-    cl_base* cashdr = find_by_filter("//Cash Drawer");
     while (true)
     {
-        inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::RequestInputSignal), "");
+
     }
-    while (!kbhit());
     return 0;
 }
 
-void System::ReadyStatus(std::string& info)
+void System::ReadySetHandler(std::string command)
 {
-    info = "Ready to work";
+    if (command == "End of settings")
+    {
+        this->send_data(GET_SIGNAL_POINTER(System::ReadySignal), "");
+    }
+    else exit(0);
 }
 
-void System::PowerOffHandler(std::string info)
+void System::ReadySignal(std::string& message)
 {
-    if (info == "Turn off the system")
+    message = "Ready to work";
+}
+
+void System::PowerOff(std::string argument)
+{
+    if (argument == "Turn off the system")
     {
-        this->set_status(0);
+        this->send_data(GET_SIGNAL_POINTER(System::PowerOffSignal), "", "PowerOff");
         exit(0);
     }
 }
 
+void System::PowerOffSignal(std::string& message)
+{
+    message = "Turn off the system";
+}
 

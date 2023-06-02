@@ -8,7 +8,7 @@ class InputDevice: public cl_base{
     public:
         InputDevice(cl_base* parent, std::string name);
 
-        void RequestInputSignal(std::string& result);
+        void CommandRead(std::string& result);
 
 };
 

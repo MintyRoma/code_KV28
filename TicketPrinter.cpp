@@ -2,20 +2,39 @@
 
 TicketPrinter::TicketPrinter(cl_base* p_head_object, std::string name) :cl_base(p_head_object, name)
 {
-	int amount = 0;
-	Timetable.clear();
-	std::cin >> amount;
+}
+
+void TicketPrinter::InitSessions(std::string argument)
+{
+	int amount = std::stoi(argument);
 	for (int i = 0; i < amount; i++)
 	{
-		Session* ns;
-		ns = new Session;
-		std::cin >> ns->amount;
-		ns->price = 0;
-		this->Timetable.push_back(ns);
-	}
-	for (int i = 0; i < amount; i++)
-	{
-		std::cin >> Timetable[i]->price;
+		Timetable.push_back(new Session);
 	}
 }
 
+void TicketPrinter::FillSeats(std::string argument)
+{
+	int counter = 0;
+	while (argument != "")
+	{
+		int pos = argument.find_first_of(" ");
+		std::string tickets = argument.substr(0, pos);
+		int amount = std::stoi(tickets);
+		Timetable[counter]->amount = amount;
+		counter++;
+	}
+}
+
+void TicketPrinter::FillPrice(std::string argument)
+{
+	int counter = 0;
+	while (argument != "")
+	{
+		int pos = argument.find_first_of(" ");
+		std::string tickets = argument.substr(0, pos);
+		int price = std::stoi(tickets);
+		Timetable[counter]->price = price;
+		counter++;
+	}
+}

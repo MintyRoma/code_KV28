@@ -18,10 +18,12 @@ class TicketPrinter: public cl_base
 
 	public:
 		TicketPrinter(cl_base* p_head_object, std::string name);
+		void InitSessions(std::string argument);
+		void FillSeats(std::string argument);
+		void FillPrice(std::string argument);
 		//Methods
 		// 
 		//Handlers
-		
 		//Signals
 };
 

@@ -13,8 +13,10 @@ class System: public cl_base
 		//Methods
 		void build_tree_objects();
 		int exec_app();
-		void ReadyStatus(std::string& info);
-		void PowerOffHandler(std::string info);
+		void ReadySetHandler(std::string command);
+		void ReadySignal(std::string& message);
+		void PowerOff(std::string info);
+		void PowerOffSignal(std::string& message);
 };
 
 #endif
