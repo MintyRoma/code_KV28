@@ -12,6 +12,7 @@ class CashDrawer: public cl_base{
         CashDrawer(cl_base* parent, std::string name);
         void GetStatusHandler(std::string command);
         void StatusSignal(std::string& message);
+        void GetRevenueHandler(std::string& message);
 };
 
 #endif

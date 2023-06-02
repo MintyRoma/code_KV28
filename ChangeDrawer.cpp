@@ -35,3 +35,13 @@ void ChangeDrawer::StatusSignal(std::string & message)
 	}
 	message = new_message;
 }
+
+void ChangeDrawer::GetChangeTotal(std::string& message)
+{
+	int sum = 0;
+	for (std::map<int, int>::iterator iter = CashStorage.begin(); iter != CashStorage.end(); iter++)
+	{
+		sum = iter->first * iter->second;
+	}
+	message += std::to_string(sum);
+}

@@ -58,3 +58,8 @@ void TicketPrinter::TicketsAmountSignal(std::string & message)
 	}
 	message = new_message;
 }
+
+void TicketPrinter::GetSoldTicketsHandler(std::string& message)
+{
+	message += std::to_string(sold);
+}

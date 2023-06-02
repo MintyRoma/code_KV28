@@ -15,6 +15,7 @@ class TicketPrinter: public cl_base
 	private:
 		//Vars
 		std::vector <Session*> Timetable;
+		int sold = 0;
 		//Methods
 
 	public:
@@ -24,6 +25,7 @@ class TicketPrinter: public cl_base
 		void FillPrice(std::string argument);
 		void NumberOfTicketsHandler(std::string argument);
 		void TicketsAmountSignal(std::string& message);
+		void GetSoldTicketsHandler(std::string& message);
 		//Methods
 		// 
 		//Handlers

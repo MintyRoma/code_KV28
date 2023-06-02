@@ -57,7 +57,7 @@ public:
 	std::string get_path(std::string path = "");
 	void create_link(SIGNAL_POINTER signal, HANDLER_POINTER handler, cl_base* target, std::string name="*");
 	void remove_link(SIGNAL_POINTER signal, HANDLER_POINTER handler, cl_base* target, std::string name="*");
-	void send_data(SIGNAL_POINTER signal, std::string message, std::string name = "*");
+	std::string send_data(SIGNAL_POINTER signal, std::string message, std::string name = "*");
 	void message_transmit_signal(std::string &message);
 	void message_recieve_handler(std::string message);
 	virtual int get_type();
