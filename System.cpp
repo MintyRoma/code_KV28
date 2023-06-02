@@ -29,14 +29,18 @@ void System::build_tree_objects()
     inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(System::PowerOff), this); //Global Scope
     this->create_link(GET_SIGNAL_POINTER(System::PowerOffSignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev, "PowerOff");
     
-    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(ChangeDrawer::GetStatusHandler), changedr, "");
-    changedr->create_link(GET_SIGNAL_POINTER(ChangeDrawer::StatusSignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev, "");
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(ChangeDrawer::GetStatusHandler), changedr);
+    changedr->create_link(GET_SIGNAL_POINTER(ChangeDrawer::StatusSignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
 
-    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(CashDrawer::GetStatusHandler), cashdr, "");
-    cashdr->create_link(GET_SIGNAL_POINTER(CashDrawer::StatusSignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev, "");
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(CashDrawer::GetStatusHandler), cashdr);
+    cashdr->create_link(GET_SIGNAL_POINTER(CashDrawer::StatusSignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
     
     inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(System::ReadySetHandler), this, "Ready");
-    this->create_link(GET_SIGNAL_POINTER(System::ReadySignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev,"");
+    this->create_link(GET_SIGNAL_POINTER(System::ReadySignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(TicketPrinter::NumberOfTicketsHandler), tckprint);
+    tckprint->create_link(GET_SIGNAL_POINTER(TicketPrinter::TicketsAmountSignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+
     //Init
     inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "", "InitSessions");
     inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "", "FillSeats");
@@ -47,9 +51,10 @@ void System::build_tree_objects()
 
 int System::exec_app()
 {
+    cl_base* input_dev = this->find_by_filter("//Input Device");
     while (true)
     {
-
+        input_dev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead),"");
     }
     return 0;
 }

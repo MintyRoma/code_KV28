@@ -1,6 +1,7 @@
 #ifndef __TICKETPRINTER__H
 #define __TICKETPRINTER__H
 #include "cl_base.h"
+#include <sstream>
 
 	
 struct Session
@@ -21,6 +22,8 @@ class TicketPrinter: public cl_base
 		void InitSessions(std::string argument);
 		void FillSeats(std::string argument);
 		void FillPrice(std::string argument);
+		void NumberOfTicketsHandler(std::string argument);
+		void TicketsAmountSignal(std::string& message);
 		//Methods
 		// 
 		//Handlers

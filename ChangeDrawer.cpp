@@ -8,12 +8,12 @@ void ChangeDrawer::FillChange(std::string argument)
 {
 	int nominals[6] = { 5,10,50,100,200,500 };
 	int counter = 0;
-	while (argument != "")
+	std::istringstream iss(argument);
+	std::string part;
+	while (getline(iss, part, ' '))
 	{
-		int pos = argument.find_first_of(" ");
-		std::string tickets = argument.substr(0, pos);
-		int price = std::stoi(tickets);
-		CashStorage[nominals[counter]] = price;
+		int number = std::stoi(part);
+		CashStorage[nominals[counter]] = number;
 		counter++;
 	}
 }

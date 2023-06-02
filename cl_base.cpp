@@ -268,6 +268,7 @@ void cl_base::create_link(SIGNAL_POINTER signal, HANDLER_POINTER handler, cl_bas
 	new_link->p_signal = signal;
 	new_link->p_handler = handler;
 	new_link->target = target;
+	new_link->name = name;
 	links.push_back(new_link);
 }
 
@@ -286,10 +287,9 @@ void cl_base::remove_link(SIGNAL_POINTER signal, HANDLER_POINTER handler, cl_bas
 }
 
 //Modified V4
-void cl_base::send_data(SIGNAL_POINTER signal,std::string name, std::string message)
+void cl_base::send_data(SIGNAL_POINTER signal, std::string message, std::string name)
 {
 	if(status==0)return;
-	std::cout<<"\n";
 	(this->*signal)(message);
 	for (s_OBJECT_CHAT* link : this->links)
 	{
@@ -297,7 +297,6 @@ void cl_base::send_data(SIGNAL_POINTER signal,std::string name, std::string mess
 		{
 			cl_base* target = link->target;
 			if(target->status==0) continue;
-			std::cout << "\n";
 			HANDLER_POINTER handler = link->p_handler;
 			(target->*handler)(message);
 		}

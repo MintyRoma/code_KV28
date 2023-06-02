@@ -16,12 +16,12 @@ void TicketPrinter::InitSessions(std::string argument)
 void TicketPrinter::FillSeats(std::string argument)
 {
 	int counter = 0;
-	while (argument != "")
+	std::istringstream iss(argument);
+	std::string part;
+	while (getline(iss, part, ' '))
 	{
-		int pos = argument.find_first_of(" ");
-		std::string tickets = argument.substr(0, pos);
-		int amount = std::stoi(tickets);
-		Timetable[counter]->amount = amount;
+		int number = std::stoi(part);
+		Timetable[counter]->amount = number;
 		counter++;
 	}
 }
@@ -29,12 +29,32 @@ void TicketPrinter::FillSeats(std::string argument)
 void TicketPrinter::FillPrice(std::string argument)
 {
 	int counter = 0;
-	while (argument != "")
+	std::istringstream iss(argument);
+	std::string part;
+	while (getline(iss, part, ' '))
 	{
-		int pos = argument.find_first_of(" ");
-		std::string tickets = argument.substr(0, pos);
-		int price = std::stoi(tickets);
-		Timetable[counter]->price = price;
+		int number = std::stoi(part);
+		Timetable[counter]->price= number;
 		counter++;
 	}
+}
+
+void TicketPrinter::NumberOfTicketsHandler(std::string argument)
+{
+	if (argument == "Number of tickets")
+	{
+		this->send_data(GET_SIGNAL_POINTER(TicketPrinter::TicketsAmountSignal), "");
+	}
+}
+
+void TicketPrinter::TicketsAmountSignal(std::string & message)
+{
+	std::string new_message="Number of tickets:";
+	int counter = 1;
+	for (Session* ses : Timetable)
+	{
+		new_message += " ("+std::to_string(counter) + ":" +std::to_string(ses->amount)+ ")";
+		counter++;
+	}
+	message = new_message;
 }
