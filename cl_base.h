@@ -15,7 +15,6 @@ typedef void (cl_base::* HANDLER_POINTER)(std::string);
 
 struct s_OBJECT_CHAT
 {
-	std::string name = "*";
 	SIGNAL_POINTER p_signal;
 	HANDLER_POINTER p_handler;
 	cl_base* target;
@@ -55,9 +54,9 @@ public:
 	bool remove_child(std::string child_name);
 	//V4
 	std::string get_path(std::string path = "");
-	void create_link(SIGNAL_POINTER signal, HANDLER_POINTER handler, cl_base* target, std::string name="*");
-	void remove_link(SIGNAL_POINTER signal, HANDLER_POINTER handler, cl_base* target, std::string name="*");
-	void send_data(SIGNAL_POINTER signal, std::string message, std::string name = "*");
+	void create_link(SIGNAL_POINTER signal, HANDLER_POINTER handler, cl_base* target);
+	void remove_link(SIGNAL_POINTER signal, HANDLER_POINTER handler, cl_base* target);
+	void send_data(SIGNAL_POINTER signal, std::string message);
 	void message_transmit_signal(std::string &message);
 	void message_recieve_handler(std::string message);
 	virtual int get_type();

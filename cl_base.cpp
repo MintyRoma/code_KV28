@@ -257,27 +257,26 @@ std::string cl_base::get_path(std::string path)
 }
 
 //Modified V4
-void cl_base::create_link(SIGNAL_POINTER signal, HANDLER_POINTER handler, cl_base* target, std::string name)
+void cl_base::create_link(SIGNAL_POINTER signal, HANDLER_POINTER handler, cl_base* target)
 {
 	s_OBJECT_CHAT* new_link;
 	for (s_OBJECT_CHAT* link : this->links)
 	{
-		if (link->p_signal == signal && link->p_handler == handler && link->target == target && link->name==name)return;
+		if (link->p_signal == signal && link->p_handler == handler && link->target == target)return;
 	}
 	new_link = new s_OBJECT_CHAT;
 	new_link->p_signal = signal;
 	new_link->p_handler = handler;
 	new_link->target = target;
-	new_link->name = name;
 	links.push_back(new_link);
 }
 
 //Modified V4
-void cl_base::remove_link(SIGNAL_POINTER signal, HANDLER_POINTER handler, cl_base* target, std::string name)
+void cl_base::remove_link(SIGNAL_POINTER signal, HANDLER_POINTER handler, cl_base* target)
 {
 	for (int position=0; position<links.size() ; position++)
 	{
-		if (links[position]->p_signal == signal && links[position]->p_handler == handler && links[position]->target == target && links[position]->name==name)
+		if (links[position]->p_signal == signal && links[position]->p_handler == handler && links[position]->target == target)
 		{
 			delete links[position];
 			links.erase(links.begin()+position);
@@ -287,13 +286,13 @@ void cl_base::remove_link(SIGNAL_POINTER signal, HANDLER_POINTER handler, cl_bas
 }
 
 //Modified V4
-void cl_base::send_data(SIGNAL_POINTER signal, std::string message, std::string name)
+void cl_base::send_data(SIGNAL_POINTER signal, std::string message)
 {
 	if(status==0)return;
 	(this->*signal)(message);
 	for (s_OBJECT_CHAT* link : this->links)
 	{
-		if (link->p_signal == signal && link->name==name)
+		if (link->p_signal == signal)
 		{
 			cl_base* target = link->target;
 			if(target->status==0) continue;

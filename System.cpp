@@ -16,48 +16,39 @@ void System::build_tree_objects()
     cl_base* tckprint = new TicketPrinter(ctrldev, TICKETPRINTER);
 
     //Init Change Drawer
-    cl_base* changedr = new ChangeDrawer(ctrldev,CHANGEDRAWER);
+    cl_base* changedr = new ChangeExtruder(ctrldev,CHANGEEXTRUDER);
     
-    cl_base* cashdr = new CashDrawer(ctrldev, CASHDRAWER);
+    cl_base* cashdr = new CashLoader(ctrldev, CASHLOADER);
 
     //Preparation
-    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(TicketPrinter::InitSessions), tckprint, "InitSessions");
-    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(TicketPrinter::FillSeats), tckprint, "FillSeats");
-    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(TicketPrinter::FillPrice), tckprint, "FillPrice");
-    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(ChangeDrawer::FillChange), changedr, "FillChange");
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(Controller::InitSessions), ctrldev);
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(Controller::FillSeats), ctrldev);
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(Controller::FillPrice), ctrldev);
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(Controller::FillChange), ctrldev);
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(System::ReadyState), this);
+    this->create_link(GET_SIGNAL_POINTER(System::ConfirmReadiness), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
     
-    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(System::PowerOff), this); //Global Scope
-    this->create_link(GET_SIGNAL_POINTER(System::PowerOffSignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev, "PowerOff");
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(System::ExitCommand), this);
+    this->create_link(GET_SIGNAL_POINTER(System::ConfirmExit), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
     
-    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(ChangeDrawer::GetStatusHandler), changedr);
-    changedr->create_link(GET_SIGNAL_POINTER(ChangeDrawer::StatusSignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(ChangeExtruder::ChangeInformation), changedr);
+    changedr->create_link(GET_SIGNAL_POINTER(ChangeExtruder::CollectChangeInfo), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
 
-    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(CashDrawer::GetStatusHandler), cashdr);
-    cashdr->create_link(GET_SIGNAL_POINTER(CashDrawer::StatusSignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
-    
-    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(System::ReadySetHandler), this, "Ready");
-    this->create_link(GET_SIGNAL_POINTER(System::ReadySignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(CashLoader::CashInformation), cashdr);
+    cashdr->create_link(GET_SIGNAL_POINTER(CashLoader::CollectCashInfo), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
 
-    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(TicketPrinter::NumberOfTicketsHandler), tckprint);
-    tckprint->create_link(GET_SIGNAL_POINTER(TicketPrinter::TicketsAmountSignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
-
-    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(System::GetStatusHandler), this);
-    this->create_link(GET_SIGNAL_POINTER(System::GetStatusSignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
-
-    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(Controller::TicketRequestHandler),ctrldev);
-    tckprint->create_link(GET_SIGNAL_POINTER(TicketPrinter::CheckTicketAvailabilitySignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
-    ctrldev->create_link(GET_SIGNAL_POINTER(Controller::ChangeModeSignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(System::StatusCommandHandler), this);
+    this->create_link(GET_SIGNAL_POINTER(System::CollectStatusInfo), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
 
 
-    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(Controller::MoneyInsertionHandler), ctrldev);
-    ctrldev->create_link(GET_SIGNAL_POINTER(Controller::MoneyInsertionResult), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
-
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(Controller::TicketReservationCommand), ctrldev);
+    ctrldev->create_link(GET_SIGNAL_POINTER(Controller::ReserveTicket), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
     //Init
-    inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "", "InitSessions");
-    inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "", "FillSeats");
-    inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "", "FillPrice");
-    inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "", "FillChange");
-    inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "", "Ready");
+    inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "InitSessions");
+    inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "FillSeats");
+    inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "FillPrice");
+    inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "FillChange");
+    inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "Ready");
 }
 
 int System::exec_app()
@@ -71,56 +62,58 @@ int System::exec_app()
     return 0;
 }
 
-void System::ReadySetHandler(std::string command)
+void System::ReadyState(std::string command)
 {
-    if (command == "End of settings")
+    if (command.substr(0, ((std::string)"Ready").size()) == "Ready")
     {
-        this->send_data(GET_SIGNAL_POINTER(System::ReadySignal), "");
+        std::string argument = command.substr(((std::string)"Ready").size());
+        if (argument != "End of settings")
+        {
+            exit(0);
+        }
+        this->send_data(GET_SIGNAL_POINTER(System::ConfirmReadiness), "");
     }
-    else exit(0);
 }
 
-void System::ReadySignal(std::string& message)
+void System::ConfirmReadiness(std::string& command)
 {
-    message = "Ready to work";
+    command = "Ready to work";
 }
 
-void System::PowerOff(std::string argument)
+void System::ExitCommand(std::string command)
 {
-    if (argument == "Turn off the system")
+    if (command == "Turn off the system")
     {
-        this->send_data(GET_SIGNAL_POINTER(System::PowerOffSignal), "", "PowerOff");
+        this->send_data(GET_SIGNAL_POINTER(System::ConfirmExit), "");
         exit(0);
     }
 }
 
-void System::PowerOffSignal(std::string& message)
+void System::ConfirmExit(std::string& message)
 {
     message = "Turn off the system";
 }
 
-void System::GetStatusHandler(std::string command)
+void System::StatusCommandHandler(std::string command)
 {
     if (command == "System status")
     {
-        this->send_data(GET_SIGNAL_POINTER(System::GetStatusSignal), "");
-        
+        this->send_data(GET_SIGNAL_POINTER(System::CollectStatusInfo), "");
     }
 }
 
-void System::GetStatusSignal(std::string & argument)
+void System::CollectStatusInfo(std::string & message)
 {
-    std::string current_tact = std::to_string(this->tact);
-    std::string tickets_unsold, revenue, change;
-    SIGNAL_POINTER req_reven = GET_SIGNAL_POINTER(CashDrawer::GetRevenueSignal);
-    SIGNAL_POINTER req_change = GET_SIGNAL_POINTER(ChangeDrawer::GetChangeTotalSignal);
-    SIGNAL_POINTER req_tick = GET_SIGNAL_POINTER(TicketPrinter::GetUnSoldTicketsSignal);
-    cl_base* ticketprinter = this->find_by_filter((std::string)"//"+TICKETPRINTER);
-    cl_base* cashdraw = this->find_by_filter((std::string)"//"+CASHDRAWER);
-    cl_base* changedraw = this->find_by_filter((std::string)"//"+CHANGEDRAWER);
-    (ticketprinter->*req_tick)(tickets_unsold);
-    (cashdraw->*req_reven)(revenue);
-    (changedraw->*req_change)(change);
-    argument = "System status: tact " + current_tact + "; tickets " + tickets_unsold + "; ticket sales revenue " + revenue + "; change money " + change + ".";
-}
+    cl_base* controller = this->find_by_filter((std::string)"//" + CONTROLLERDEVICE);
+    SIGNAL_POINTER revenue_sig = GET_SIGNAL_POINTER(Controller::GetRevenue);
+    SIGNAL_POINTER unsold_sig = GET_SIGNAL_POINTER(Controller::GetUnsoldTickets);
+    SIGNAL_POINTER change_sig = GET_SIGNAL_POINTER(Controller::GetChangeSum);
 
+    std::string tick, revenue, unsold, change;
+    tick = std::to_string(this->tact);
+    (controller->*revenue_sig)(revenue);
+    (controller->*unsold_sig)(unsold);
+    (controller->*change_sig)(change);
+
+    message = "System status: tact " + tick + "; tickets " + unsold + "; ticket sales revenue " + revenue + "; change money " + change + ".";
+}

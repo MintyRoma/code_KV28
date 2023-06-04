@@ -9,5 +9,5 @@ void InputDevice::CommandRead(std::string &result)
 {
     std::string input;
     getline(std::cin,input);
-    result=input;
+    result+=input;
 }

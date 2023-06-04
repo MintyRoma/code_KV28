@@ -13,16 +13,14 @@ class System: public cl_base
 		//Methods
 		void build_tree_objects();
 		int exec_app();
-		void ReadySetHandler(std::string command);
-		void ReadySignal(std::string& message);
-		void PowerOff(std::string info);
-		void PowerOffSignal(std::string& message);
-		void GetStatusHandler(std::string command);
-		void GetStatusHandler(std::string& command);
-		void GetStatusSignal(std::string& argument);
-		void RequestSoldTicketsHandler(std::string& message);
-		void RequestSalesRevenue(std::string& message);
-		void RequestChangeSum(std::string & message);
+		void ReadyState(std::string command);
+		void ConfirmReadiness(std::string& command);
+		void ExitCommand(std::string command);
+		void ConfirmExit(std::string& message);
+		void StatusCommandHandler(std::string command);
+
+		void CollectStatusInfo(std::string & message);
+		
 };
 
 #endif

@@ -98,8 +98,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CashDrawer.cpp" />
-    <ClCompile Include="ChangeDrawer.cpp" />
+    <ClCompile Include="ChangeExtruder.cpp" />
+    <ClCompile Include="CashLoader.cpp" />
     <ClCompile Include="cl_base.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="InputDevice.cpp" />
@@ -109,8 +109,8 @@
     <ClCompile Include="TicketPrinter.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CashDrawer.h" />
-    <ClInclude Include="ChangeDrawer.h" />
+    <ClInclude Include="ChangeExtruder.h" />
+    <ClInclude Include="CashLoader.h" />
     <ClInclude Include="cl_base.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="extended_nodes.h" />
