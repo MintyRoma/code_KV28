@@ -43,7 +43,11 @@ void System::build_tree_objects()
 
     inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(System::GetStatusHandler), this);
     this->create_link(GET_SIGNAL_POINTER(System::GetStatusSignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
-    
+
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(Controller::TicketRequestHandler),ctrldev);
+    tckprint->create_link(GET_SIGNAL_POINTER(TicketPrinter::CheckTicketAvailabilitySignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+    ctrldev->create_link(GET_SIGNAL_POINTER(Controller::ChangeModeSignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+
     //Init
     inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "", "InitSessions");
     inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "", "FillSeats");

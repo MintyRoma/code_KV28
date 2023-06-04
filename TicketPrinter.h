@@ -2,6 +2,7 @@
 #define __TICKETPRINTER__H
 #include "cl_base.h"
 #include <sstream>
+#include "KKMParts.h"
 
 	
 struct Session
@@ -26,6 +27,7 @@ class TicketPrinter: public cl_base
 		void NumberOfTicketsHandler(std::string argument);
 		void TicketsAmountSignal(std::string& message);
 		void GetUnSoldTicketsSignal(std::string& message);
+		void CheckTicketAvailabilitySignal(std::string& request);
 		//Methods
 		// 
 		//Handlers

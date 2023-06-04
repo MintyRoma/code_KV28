@@ -68,3 +68,37 @@ void TicketPrinter::GetUnSoldTicketsSignal(std::string& request)
 	}
 	request = std::to_string(sum);
 }
+
+void TicketPrinter::CheckTicketAvailabilitySignal(std::string& request)
+{
+	int session=0, amount=0;
+	bool first = true;
+	std::istringstream iss(request);
+	std::string part;
+	while (getline(iss, part, ' '))
+	{
+		int number = std::stoi(part);
+		if (first)
+		{
+			session = number;
+			first = false;
+		}
+		else
+		{
+			amount = number;
+		}
+	}
+	Session* ses = Timetable[session - 1];
+	cl_base* controller = this->find_by_filter("//Controller Device");
+	if (ses->amount >= amount)
+	{
+		request = "Number of tickets : " + std::to_string(ses->amount) + "; Ticket price : " + std::to_string(ses->amount * ses->price);
+		controller->send_data(GET_SIGNAL_POINTER(Controller::ChangeModeSignal), "Enough");
+	}
+	else
+	{
+		request = "No tickets";
+		if (amount == 1) request = "No ticket";
+		controller->send_data(GET_SIGNAL_POINTER(Controller::ChangeModeSignal), "Less");
+	}
+}
