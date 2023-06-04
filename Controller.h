@@ -19,6 +19,7 @@ class Controller: public cl_base{
         void TicketRequestHandler(std::string command);
         void MoneyInsertionHandler(std::string command);
         void ChangeModeSignal(std::string& argument);
+        void MoneyInsertionResult(std::string& message);
         void TicketSelectedSignal(std::string& argument);
 };
 

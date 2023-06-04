@@ -32,3 +32,19 @@ void CashDrawer::GetRevenueSignal(std::string& request)
 	}
 	request = std::to_string(sum);
 }
+
+void CashDrawer::MoneyInsertion(std::string& argument)
+{
+	int nominal = std::stoi(argument);
+	DebitStorage[nominal]++;
+}
+
+void CashDrawer::GetDebitSum(std::string& message)
+{
+	int sum = 0;
+	for (std::map<int, int>::iterator record = DebitStorage.begin(); record != DebitStorage.end(); record++)
+	{
+		sum += record->first * record->second;
+	}
+	message = std::to_string(sum);
+}

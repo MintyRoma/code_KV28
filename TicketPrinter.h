@@ -16,7 +16,8 @@ class TicketPrinter: public cl_base
 	private:
 		//Vars
 		std::vector <Session*> Timetable;
-		int sold = 0;
+		Session* reserved_session = nullptr;
+		int reserved_amount=0;
 		//Methods
 
 	public:
@@ -28,6 +29,7 @@ class TicketPrinter: public cl_base
 		void TicketsAmountSignal(std::string& message);
 		void GetUnSoldTicketsSignal(std::string& message);
 		void CheckTicketAvailabilitySignal(std::string& request);
+		void GetReservedSum(std::string& message);
 		//Methods
 		// 
 		//Handlers

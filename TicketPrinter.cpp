@@ -89,10 +89,12 @@ void TicketPrinter::CheckTicketAvailabilitySignal(std::string& request)
 		}
 	}
 	Session* ses = Timetable[session - 1];
-	cl_base* controller = this->find_by_filter("//Controller Device");
+	cl_base* controller = this->find_by_filter((std::string)"//"+CONTROLLERDEVICE);
 	if (ses->amount >= amount)
 	{
 		request = "Number of tickets : " + std::to_string(ses->amount) + "; Ticket price : " + std::to_string(ses->amount * ses->price);
+		this->reserved_session = ses;
+		this->reserved_amount = amount;
 		controller->send_data(GET_SIGNAL_POINTER(Controller::ChangeModeSignal), "Enough");
 	}
 	else
@@ -101,4 +103,9 @@ void TicketPrinter::CheckTicketAvailabilitySignal(std::string& request)
 		if (amount == 1) request = "No ticket";
 		controller->send_data(GET_SIGNAL_POINTER(Controller::ChangeModeSignal), "Less");
 	}
+}
+
+void TicketPrinter::GetReservedSum(std::string& message)
+{
+	message = std::to_string(reserved_session->price * reserved_amount);
 }

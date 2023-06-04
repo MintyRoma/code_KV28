@@ -9,4 +9,12 @@
 #include "Controller.h"
 #include "System.h"
 
+#define SYSTEMDEVICE "System"
+#define INPUTDEVICE "Input Device"
+#define SCREENDEVICE "Screen Device"
+#define CONTROLLERDEVICE "Controller Device"
+#define TICKETPRINTER "Ticket Printer"
+#define CASHDRAWER "Cash Drawer"
+#define CHANGEDRAWER "Change Drawer"
+
 #endif

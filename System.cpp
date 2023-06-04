@@ -9,16 +9,16 @@ System::System(cl_base* parent, std::string name):cl_base(parent,name)
 void System::build_tree_objects()
 {
     //Init no-input devices
-    cl_base* inptdev = new InputDevice(this, "Input Device");
-    cl_base* screendev = new ScreenDevice(this, "Screen Device");
-    cl_base* ctrldev = new Controller(this, "Controller Device");
+    cl_base* inptdev = new InputDevice(this, INPUTDEVICE);
+    cl_base* screendev = new ScreenDevice(this, SCREENDEVICE);
+    cl_base* ctrldev = new Controller(this, CONTROLLERDEVICE);
     //Init Ticket printer
-    cl_base* tckprint = new TicketPrinter(ctrldev, "Ticket Printer");
+    cl_base* tckprint = new TicketPrinter(ctrldev, TICKETPRINTER);
 
     //Init Change Drawer
-    cl_base* changedr = new ChangeDrawer(ctrldev,"Change Drawer");
+    cl_base* changedr = new ChangeDrawer(ctrldev,CHANGEDRAWER);
     
-    cl_base* cashdr = new CashDrawer(ctrldev, "Cash Drawer");
+    cl_base* cashdr = new CashDrawer(ctrldev, CASHDRAWER);
 
     //Preparation
     inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(TicketPrinter::InitSessions), tckprint, "InitSessions");
@@ -48,6 +48,10 @@ void System::build_tree_objects()
     tckprint->create_link(GET_SIGNAL_POINTER(TicketPrinter::CheckTicketAvailabilitySignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
     ctrldev->create_link(GET_SIGNAL_POINTER(Controller::ChangeModeSignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
 
+
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(Controller::MoneyInsertionHandler), ctrldev);
+    ctrldev->create_link(GET_SIGNAL_POINTER(Controller::MoneyInsertionResult), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+
     //Init
     inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "", "InitSessions");
     inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "", "FillSeats");
@@ -58,7 +62,7 @@ void System::build_tree_objects()
 
 int System::exec_app()
 {
-    cl_base* input_dev = this->find_by_filter("//Input Device");
+    cl_base* input_dev = this->find_by_filter((std::string)"//"+INPUTDEVICE);
     while (true)
     {
         input_dev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead),"");
@@ -111,9 +115,9 @@ void System::GetStatusSignal(std::string & argument)
     SIGNAL_POINTER req_reven = GET_SIGNAL_POINTER(CashDrawer::GetRevenueSignal);
     SIGNAL_POINTER req_change = GET_SIGNAL_POINTER(ChangeDrawer::GetChangeTotalSignal);
     SIGNAL_POINTER req_tick = GET_SIGNAL_POINTER(TicketPrinter::GetUnSoldTicketsSignal);
-    cl_base* ticketprinter = this->find_by_filter("//Ticket Printer");
-    cl_base* cashdraw = this->find_by_filter("//Cash Drawer");
-    cl_base* changedraw = this->find_by_filter("//Change Drawer");
+    cl_base* ticketprinter = this->find_by_filter((std::string)"//"+TICKETPRINTER);
+    cl_base* cashdraw = this->find_by_filter((std::string)"//"+CASHDRAWER);
+    cl_base* changedraw = this->find_by_filter((std::string)"//"+CHANGEDRAWER);
     (ticketprinter->*req_tick)(tickets_unsold);
     (cashdraw->*req_reven)(revenue);
     (changedraw->*req_change)(change);
