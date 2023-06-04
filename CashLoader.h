@@ -5,12 +5,14 @@
 class CashLoader : public cl_base
 {
     private:
-        std::map<int, int> Cash = { {5,0},{10,0},{50,0},{100,0},{500,0} };
+        std::map<int, int> DebitStorage = { {5,0},{10,0},{50,0},{100,0},{500,0} };
     public:
         CashLoader(cl_base* parent, std::string name);
         void CashInformation(std::string command);
         void CollectCashInfo(std::string& message);
         void MoneyInsertionHandler(std::string command);
+        void MoneyInsertionConfirmation(std::string& argument);
+        int DebitSum();
         int CalculateSum();
         void NotifyInsertion(std::string& message);
 };

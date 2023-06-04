@@ -37,5 +37,8 @@ class Controller : public cl_base
         void TicketReservationCommand(std::string command);
         void ReserveTicket(std::string& argument);
         bool CheckChangePosibility();
+        void GetMode(std::string& argument);
+        void InsertMoneyPrecheck(std::string& argument);
+        void MoneyInsertionNotify(std::string& argument);
 };
 

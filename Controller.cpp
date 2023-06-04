@@ -173,3 +173,27 @@ bool Controller::CheckChangePosibility()
 	}
 	return false;
 }
+
+void Controller::GetMode(std::string& argument)
+{
+	if (mode == TicketSelection)
+	{
+		argument = "TicketSelection";
+	}
+	else
+	{
+		argument = "MoneyInsertion";
+	}
+}
+
+void Controller::InsertMoneyPrecheck(std::string& argument)
+{
+	int nominal = std::stoi(argument);
+	CashDrawer[nominal]++;
+}
+
+void Controller::MoneyInsertionNotify(std::string& argument)
+{
+	std::string debit = argument;
+	argument = "Ticket price " + std::to_string(reserved_amount * reserved_session->price) + " amount deposited " + debit;
+}
