@@ -287,7 +287,7 @@ void cl_base::remove_link(SIGNAL_POINTER signal, HANDLER_POINTER handler, cl_bas
 }
 
 //Modified V4
-void cl_base::send_data(SIGNAL_POINTER signal, std::string &message, std::string name)
+void cl_base::send_data(SIGNAL_POINTER signal, std::string message, std::string name)
 {
 	if(status==0)return;
 	(this->*signal)(message);

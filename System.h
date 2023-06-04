@@ -17,6 +17,7 @@ class System: public cl_base
 		void ReadySignal(std::string& message);
 		void PowerOff(std::string info);
 		void PowerOffSignal(std::string& message);
+		void GetStatusHandler(std::string command);
 		void GetStatusHandler(std::string& command);
 		void GetStatusSignal(std::string& argument);
 		void RequestSoldTicketsHandler(std::string& message);

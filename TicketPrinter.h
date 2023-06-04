@@ -25,7 +25,7 @@ class TicketPrinter: public cl_base
 		void FillPrice(std::string argument);
 		void NumberOfTicketsHandler(std::string argument);
 		void TicketsAmountSignal(std::string& message);
-		void GetSoldTicketsHandler(std::string& message);
+		void GetUnSoldTicketsSignal(std::string& message);
 		//Methods
 		// 
 		//Handlers

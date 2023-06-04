@@ -43,9 +43,7 @@ void System::build_tree_objects()
 
     inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(System::GetStatusHandler), this);
     this->create_link(GET_SIGNAL_POINTER(System::GetStatusSignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
-    this->create_link(GET_SIGNAL_POINTER(System::RequestChangeSum), GET_HANDLER_POINTER(ChangeDrawer::GetChangeTotal), changedr, "ChangeSum");
-    this->create_link(GET_SIGNAL_POINTER(System::RequestSalesRevenue), GET_HANDLER_POINTER(CashDrawer::GetRevenueHandler), cashdr, "CashSum");
-    this->create_link(GET_SIGNAL_POINTER(System::RequestSoldTicketsHandler), GET_HANDLER_POINTER(TicketPrinter::GetSoldTicketsHandler), tckprint, "SoldTickets");
+    
     //Init
     inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "", "InitSessions");
     inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "", "FillSeats");
@@ -93,36 +91,28 @@ void System::PowerOffSignal(std::string& message)
     message = "Turn off the system";
 }
 
-void System::GetStatusHandler(std::string& command)
+void System::GetStatusHandler(std::string command)
 {
     if (command == "System status")
     {
-        this->send_data(GET_SIGNAL_POINTER(GetStatusSignal), "");
+        this->send_data(GET_SIGNAL_POINTER(System::GetStatusSignal), "");
+        
     }
 }
 
 void System::GetStatusSignal(std::string & argument)
 {
     std::string current_tact = std::to_string(this->tact);
-    std::string tickets_sold, revenue, change;
-    this->send_data(GET_SIGNAL_POINTER(RequestSoldTicketsHandler), tickets_sold, "SoldTickets");
-    this->send_data(GET_SIGNAL_POINTER(RequestSalesRevenue), revenue, "CashSum");
-    this->send_data(GET_SIGNAL_POINTER(RequestChangeSum), change, "ChangeSum");
-    argument = "System status: tact " + current_tact + ";" + tickets_sold + ";" + revenue + ";" + change + ";";
-}
-
-void System::RequestSoldTicketsHandler(std::string & message)
-{
-    message = " tickets ";
-}
-
-void System::RequestSalesRevenue(std::string & message)
-{
-    message = " ticket sales revenue ";
-}
-
-void System::RequestChangeSum(std::strin g& message)
-{
-    message = " change money ";
+    std::string tickets_unsold, revenue, change;
+    SIGNAL_POINTER req_reven = GET_SIGNAL_POINTER(CashDrawer::GetRevenueSignal);
+    SIGNAL_POINTER req_change = GET_SIGNAL_POINTER(ChangeDrawer::GetChangeTotalSignal);
+    SIGNAL_POINTER req_tick = GET_SIGNAL_POINTER(TicketPrinter::GetUnSoldTicketsSignal);
+    cl_base* ticketprinter = this->find_by_filter("//Ticket Printer");
+    cl_base* cashdraw = this->find_by_filter("//Cash Drawer");
+    cl_base* changedraw = this->find_by_filter("//Change Drawer");
+    (ticketprinter->*req_tick)(tickets_unsold);
+    (cashdraw->*req_reven)(revenue);
+    (changedraw->*req_change)(change);
+    argument = "System status: tact " + current_tact + "; tickets " + tickets_unsold + "; ticket sales revenue " + revenue + "; change money " + change + ".";
 }
 

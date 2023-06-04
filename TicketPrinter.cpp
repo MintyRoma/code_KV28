@@ -59,7 +59,12 @@ void TicketPrinter::TicketsAmountSignal(std::string & message)
 	message = new_message;
 }
 
-void TicketPrinter::GetSoldTicketsHandler(std::string& message)
+void TicketPrinter::GetUnSoldTicketsSignal(std::string& request)
 {
-	message += std::to_string(sold);
+	int sum = 0;
+	for (Session* ses : Timetable)
+	{
+		sum += ses->amount;
+	}
+	request = std::to_string(sum);
 }

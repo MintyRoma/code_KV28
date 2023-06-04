@@ -13,7 +13,7 @@ class ChangeDrawer: public cl_base{
         void FillChange(std::string argument);
         void GetStatusHandler(std::string command);
         void StatusSignal(std::string& message);
-        void GetChangeTotal(std::string& message);
+        void GetChangeTotalSignal(std::string& message);
 };
 
 #endif

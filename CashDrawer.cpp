@@ -9,7 +9,7 @@ void CashDrawer::GetStatusHandler(std::string command)
 {
 	if (command == "Status of the money receiving device")
 	{
-		this->send_data(GET_SIGNAL_POINTER(CashDrawer::StatusSignal));
+		this->send_data(GET_SIGNAL_POINTER(CashDrawer::StatusSignal),"");
 	}
 }
 
@@ -23,12 +23,12 @@ void CashDrawer::StatusSignal(std::string& message)
 	message = new_message;
 }
 
-void CashDrawer::GetRevenueHandler(std::string& message)
+void CashDrawer::GetRevenueSignal(std::string& request)
 {
-	int sum=0;
+	int sum = 0;
 	for (std::map<int, int>::iterator iter = CashStorage.begin(); iter != CashStorage.end(); iter++)
 	{
 		sum += iter->first * iter->second;
 	}
-	message += std::to_string(sum);
+	request = std::to_string(sum);
 }
