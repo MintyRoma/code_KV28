@@ -36,14 +36,18 @@ class Controller : public cl_base
         void GetChangeSum(std::string& argument);
         void TicketReservationCommand(std::string command);
         void ReserveTicket(std::string& argument);
-        bool CheckChangePosibility();
-        void GetMode(std::string& argument);
-        void InsertMoneyPrecheck(std::string& argument);
         void MoneyInsertionNotify(std::string& argument);
-        void TicketPaymentCheck(std::string& argument);
-        void MoneyGiveBack(std::string& argument);
-        bool ChangePosibilityForDebit();
-        void CreateMoneySet(std::string & argument);
-        void CompleteProcessing(std::string& message);
+        bool ChangePosibilityForDebit(int sum);
+        void StartProcessing(std::string& argument);
+        std::string CreateChangeSet(int sum);
+        void CompleteProcessing(std::string& argument);
+        void NumberOfTicketsCommand(std::string command);
+        void ShowTickets(std::string& message);
+        void InsertionPrecheck(std::string& argument);
+        void RejectionCommand(std::string command);
+        void Rejection(std::string& argument);
+        void MoneyDisposing(std::string& argument);
+        void ClearProcessing(std::string& argument);
+        void MoneyInsert(std::string& argument);
 };
 

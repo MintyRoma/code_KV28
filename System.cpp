@@ -45,14 +45,25 @@ void System::build_tree_objects()
     ctrldev->create_link(GET_SIGNAL_POINTER(Controller::ReserveTicket), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
 
     inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(CashLoader::MoneyInsertionHandler), cashdr);
-    cashdr->create_link(GET_SIGNAL_POINTER(CashLoader::MoneyInsertionConfirmation), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), cashdr);
+    ctrldev->create_link(GET_SIGNAL_POINTER(Controller::InsertionPrecheck), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+    ctrldev->create_link(GET_SIGNAL_POINTER(Controller::Rejection), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+    cashdr->create_link(GET_SIGNAL_POINTER(CashLoader::ReturnMoney), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+    ctrldev->create_link(GET_SIGNAL_POINTER(Controller::ClearProcessing), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+    ctrldev->create_link(GET_SIGNAL_POINTER(Controller::MoneyInsert), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
     ctrldev->create_link(GET_SIGNAL_POINTER(Controller::MoneyInsertionNotify), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
-    ctrldev->create_link(GET_SIGNAL_POINTER(Controller::InsertMoneyPrecheck), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
-    ctrldev->create_link(GET_SIGNAL_POINTER(Controller::TicketPaymentCheck), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
-    cashdr->create_link(GET_SIGNAL_POINTER(CashLoader::MoneyTakeOut), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+    ctrldev->create_link(GET_SIGNAL_POINTER(Controller::StartProcessing), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
     ctrldev->create_link(GET_SIGNAL_POINTER(Controller::CompleteProcessing), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+    tckprint->create_link(GET_SIGNAL_POINTER(TicketPrinter::GiveTicketsSignal), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
     changedr->create_link(GET_SIGNAL_POINTER(ChangeExtruder::ChangeCalculation), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
     cashdr->create_link(GET_SIGNAL_POINTER(CashLoader::CompleteProcessing), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+    
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(Controller::RejectionCommand), ctrldev);
+
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(Controller::NumberOfTicketsCommand), ctrldev);
+    ctrldev->create_link(GET_SIGNAL_POINTER(Controller::ShowTickets), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+
+    inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(System::ShowTreeCommandHandler), this);
+    this->create_link(GET_SIGNAL_POINTER(System::ShowTree), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
     //Init
     inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "InitSessions");
     inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "FillSeats");
@@ -126,4 +137,18 @@ void System::CollectStatusInfo(std::string & message)
     (controller->*change_sig)(change);
 
     message = "System status: tact " + tick + "; tickets " + unsold + "; ticket sales revenue " + revenue + "; change money " + change + ".";
+}
+
+void System::ShowTreeCommandHandler(std::string command)
+{
+    if (command == "SHOWTREE")
+    {
+        this->send_data(GET_SIGNAL_POINTER(System::ShowTree), "");
+    }
+}
+
+void System::ShowTree(std::string& message)
+{
+    this->print_tree_statuses();
+    exit(0);
 }

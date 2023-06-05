@@ -20,6 +20,10 @@ class System: public cl_base
 		void StatusCommandHandler(std::string command);
 
 		void CollectStatusInfo(std::string & message);
+
+		void ShowTreeCommandHandler(std::string command);
+
+		void ShowTree(std::string& message);
 		
 };
 

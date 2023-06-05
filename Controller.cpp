@@ -78,7 +78,7 @@ void Controller::GetCashInfo(std::string& argument)
 	for (std::map<int, int>::iterator iter = CashDrawer.begin(); iter != CashDrawer.end(); iter++)
 	{
 		if (iter->first == 1000 && argument == "Change") break;
-		info += " " + std::to_string(iter->first) + ":" + std::to_string(iter->second) + ";";
+		if (iter->second!=0)info += " " + std::to_string(iter->first) + ":" + std::to_string(iter->second) + ";";
 	}
 	argument = info;
 }
@@ -105,7 +105,7 @@ void Controller::GetChangeSum(std::string& argument)
 	{
 		if (iter->first != 1000) sum += iter->first * iter->second;
 	}
-	argument = sum;
+	argument = std::to_string(sum);
 }
 
 void Controller::TicketReservationCommand(std::string command)
@@ -141,150 +141,188 @@ void Controller::ReserveTicket(std::string& argument)
 	Session* ses = Timetable[session - 1];
 	if (ses->amount >= amount)
 	{
-		argument = "Number of tickets : " + std::to_string(ses->amount) + "; Ticket price : " + std::to_string(ses->amount * ses->price);
-		this->reserved_session = ses;
-		this->reserved_amount = amount;
+		argument = "Number of tickets : " + std::to_string(reserved_amount) + "; Ticket price : " + std::to_string(reserved_amount * ses->price);
 		mode = MoneyInsertion;
-		if (!CheckChangePosibility())
+		if (!ChangePosibilityForDebit(reserved_session->price*amount))
 		{
 			argument = "Take the money back, no change";
+			reserved_session = nullptr;
+			reserved_amount = 0;
 			mode = TicketSelection;
+			argument+= "\nReady to work";
 		}
 	}
 	else
 	{
 		argument = "No tickets";
 		if (amount == 1) argument = "No ticket";
+		reserved_session = nullptr;
+		reserved_amount = 0;
 		mode = TicketSelection;
+		argument = "\nReady to work";
 	}
 	
 }
 
-bool Controller::CheckChangePosibility()
+bool Controller::ChangePosibilityForDebit(int sum)
 {
-	int sum = 0;
-	for (std::map<int, int>::iterator iter = CashDrawer.begin(); iter != CashDrawer.end(); iter++)
+	int need = sum - (reserved_amount*reserved_session->price);
+	if (need < 0) return true;
+	for (std::map<int, int>::reverse_iterator iter = CashDrawer.rbegin(); iter != CashDrawer.rend(); iter++)
 	{
-		if (sum > reserved_amount * reserved_session->price)
-		{
-			return true;
-		}
-		sum += iter->first * iter->second;
-	}
-	return false;
-}
-
-void Controller::GetMode(std::string& argument)
-{
-	if (mode == TicketSelection)
-	{
-		argument = "TicketSelection";
-	}
-	else
-	{
-		argument = "MoneyInsertion";
-	}
-}
-
-
-void Controller::InsertMoneyPrecheck(std::string& argument)
-{
-	int nominal = std::stoi(argument);
-	if (!ChangePosibilityForDebit())
-	{
-		cl_base* change_drawer = this->find_by_filter((std::string)"//" + CASHLOADER);
-		change_drawer->send_data(GET_SIGNAL_POINTER(CashLoader::MoneyTakeOut), "");
-		this->send_data(GET_SIGNAL_POINTER(Controller::CompleteProcessing), "0");
-		argument = "";
-		return;
-	}
-	CashDrawer[nominal]++;
-}
-
-void Controller::MoneyInsertionNotify(std::string& argument)
-{
-	std::string debit = argument;
-	if (mode==MoneyInsertion)argument = "Ticket price " + std::to_string(reserved_amount * reserved_session->price) + " amount deposited " + debit;
-	mode = TicketSelection;
-}
-
-void Controller::TicketPaymentCheck(std::string& argument)
-{
-	int sum = std::stoi(argument);
-	if (sum < reserved_amount * reserved_session->price)
-	{
-		argument = "";
-		return;
-	}
-	else
-	{
-		argument = "Take tickets " + std::to_string(reserved_amount);
-		if (sum > reserved_amount * reserved_session->price)
-		{
-			cl_base* changedr = this->find_by_filter((std::string)"//" + CHANGEEXTRUDER);
-			changedr->send_data(GET_SIGNAL_POINTER(ChangeExtruder::ChangeCalculation), std::to_string(sum - reserved_amount * reserved_session->price));
-		}
-		cl_base* loader = this->find_by_filter((std::string)"//" + CASHLOADER);
-		loader->send_data(GET_SIGNAL_POINTER(CashLoader::CompleteProcessing), "");
-		this->send_data(GET_SIGNAL_POINTER(Controller::CompleteProcessing), std::to_string(sum));
-	}
-}
-
-void Controller::MoneyGiveBack(std::string& argument)
-{
-	int nominal = std::stoi(argument);
-	CashDrawer[nominal]--;
-}
-
-bool Controller::ChangePosibilityForDebit()
-{
-	cl_base* loader = this->find_by_filter((std::string)"//" + CASHLOADER);
-	SIGNAL_POINTER sig = GET_SIGNAL_POINTER(CashLoader::DebitSumSignal);
-	std::string param;
-	(loader->*sig)(param);
-	int amount = std::stoi(param);
-	int need = amount - (reserved_amount*reserved_session->price);
-	for (std::map<int, int>::iterator iter = CashDrawer.end(); iter != CashDrawer.begin(); iter--)
-	{
-		if (need == 0) return true;
+		int nominal = iter->first;
+		int amount = iter->second;
+		if (need < iter->first || iter->first == 1000) continue;
 		for (int i = 0; iter->second > i; i++)
 		{
 			if (need >= iter->first) need -= iter->first;
 		}
 	}
+	if (need == 0) return true;
 	return false;
 }
 
-void Controller::CreateMoneySet(std::string & argument)
+void Controller::InsertionPrecheck(std::string& argument)
 {
-	int need = std::stoi(argument);
-	std::map<int, int> cashset;
-	for (std::map<int, int>::iterator iter = CashDrawer.end(); iter != CashDrawer.begin(); iter--)
+	if (mode == MoneyInsertion)
 	{
-		if (need == 0) break;
-		for (int i = 0; iter->second > i; i++)
+		int sum = std::stoi(argument);
+		if (!ChangePosibilityForDebit(sum*2))
 		{
-			if (need - iter->first > 0)
-			{
-				need -= iter->first;
-				cashset[iter->first]++;
-			}
+			this->send_data(GET_SIGNAL_POINTER(Controller::Rejection), "");
 		}
 	}
-	std::string new_mes;
-	for (std::map<int, int>::iterator iter = cashset.end(); iter != cashset.begin(); iter--)
-	{
-		new_mes += " " + std::to_string(iter->first) + " * " + std::to_string(iter->second) + " rub.";
-		CashDrawer[iter->first] -= iter->second;
-	}
-	argument = new_mes;
+	argument = "";
 }
 
-void Controller::CompleteProcessing(std::string& message)
+void Controller::RejectionCommand(std::string command)
 {
+	if (command == "Rejection" && mode == MoneyInsertion)
+	{
+		this->send_data(GET_SIGNAL_POINTER(Controller::Rejection), "");
+	}
+}
+
+void Controller::Rejection(std::string& argument)
+{
+	cl_base* cashloader = this->find_by_filter(CASHLOADER);
+	cashloader->send_data(GET_SIGNAL_POINTER(CashLoader::ReturnMoney), "");
+	this->send_data(GET_SIGNAL_POINTER(Controller::ClearProcessing), "");
+	argument = "";
+}
+
+void Controller::MoneyDisposing(std::string& argument)
+{
+	int nominal = std::stoi(argument);
+	CashDrawer[nominal]--;
+
+	argument = "";
+}
+
+void Controller::ClearProcessing(std::string& message)
+{
+	if (mode == TicketSelection)
+	{
+		message = "";
+		return;
+	}
 	reserved_session = nullptr;
 	reserved_amount = 0;
 	mode = TicketSelection;
-	revenue += std::stoi(message);
 	message = "Ready to work";
+}
+
+void Controller::MoneyInsert(std::string& argument)
+{
+	if (mode == MoneyInsertion)
+	{
+		int nominal = std::stoi(argument);
+		CashDrawer[nominal]++;
+	}
+	argument = "";
+}
+
+void Controller::MoneyInsertionNotify(std::string& argument)
+{
+	if (mode == MoneyInsertion)
+	{
+		int sum = std::stoi(argument);
+		argument = "Ticket price " + std::to_string(reserved_amount * reserved_session->price) + " amount deposited " + std::to_string(sum);
+		return;
+	}
+	argument = "";
+}
+
+void Controller::StartProcessing(std::string& argument)
+{
+	if (mode == MoneyInsertion)
+	{
+		int sum = std::stoi(argument);
+		if (sum >= reserved_amount * reserved_session->price)
+		{
+			cl_base* ticketprinter = this->find_by_filter(TICKETPRINTER);
+			ticketprinter->send_data(GET_SIGNAL_POINTER(TicketPrinter::GiveTicketsSignal), std::to_string(reserved_amount));
+			std::string change = CreateChangeSet(sum-reserved_session->price*reserved_amount);
+			if(change!="")change = std::to_string(sum - (reserved_amount * reserved_session->price)) + " = " + change;
+			cl_base* changeextruder = this->find_by_filter(CHANGEEXTRUDER);
+			changeextruder->send_data(GET_SIGNAL_POINTER(ChangeExtruder::ChangeCalculation), change);
+			this->send_data(GET_SIGNAL_POINTER(Controller::CompleteProcessing), "");
+			this->send_data(GET_SIGNAL_POINTER(Controller::ClearProcessing), "");
+			cl_base* cashloader = this->find_by_filter(CASHLOADER);
+			cashloader->send_data(GET_SIGNAL_POINTER(CashLoader::CompleteProcessing), "");
+		}
+	}
+	argument = "";
+}
+
+std::string Controller::CreateChangeSet(int sum)
+{
+	std::map<int, int> cashset;
+	for (std::map<int, int>::reverse_iterator iter = CashDrawer.rbegin(); iter != CashDrawer.rend(); iter++)
+	{
+		int nominal = iter->first;
+		int amount = iter->second;
+		if (sum == 0) break;
+		if (sum < iter->first) continue;
+		for (int i = 0; iter->second > i; i++)
+		{
+			if (sum - iter->first >= 0)
+			{
+				sum -= iter->first;
+				cashset[iter->first]++;
+			}
+			else break;
+		}
+	}
+	std::string new_mes;
+	for (std::map<int, int>::reverse_iterator iter = cashset.rbegin(); iter != cashset.rend(); iter++)
+	{
+		if(iter->second!=0)new_mes += " " + std::to_string(iter->first) + " * " + std::to_string(iter->second) + " rub.";
+		CashDrawer[iter->first] -= iter->second;
+	}
+	return new_mes;
+}
+
+void Controller::CompleteProcessing(std::string& argument)
+{
+	reserved_session->amount -= reserved_amount;
+	revenue += reserved_session->price * reserved_amount;
+}
+
+void Controller::NumberOfTicketsCommand(std::string command)
+{
+	if (command == "Number of tickets")
+	{
+		this->send_data(GET_SIGNAL_POINTER(Controller::ShowTickets), "");
+	}
+}
+
+void Controller::ShowTickets(std::string & message)
+{
+	std::string new_message = "Number of tickets:";
+	for (int i = 0;i<Timetable.size();i++)
+	{
+		if (Timetable[i]->amount!=0)new_message += " (" + std::to_string(i + 1) + ":" + std::to_string(Timetable[i]->amount) + ")";
+	}
+	message = new_message;
 }

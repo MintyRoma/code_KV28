@@ -8,5 +8,6 @@ class TicketPrinter : public cl_base
 		
 	public:
 		TicketPrinter(cl_base* parent, std::string name);
+		void GiveTicketsSignal(std::string& argument);
 };
 

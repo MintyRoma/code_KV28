@@ -16,5 +16,7 @@ class CashLoader : public cl_base
         void DebitSumSignal(std::string& message);
         void MoneyTakeOut(std::string& message);
         void CompleteProcessing(std::string& message);
+        void ReturnMoney(std::string& message);
+        void InsertionPrecheck(std::string& argument);
 };
 
