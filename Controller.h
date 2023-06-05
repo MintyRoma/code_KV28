@@ -40,5 +40,10 @@ class Controller : public cl_base
         void GetMode(std::string& argument);
         void InsertMoneyPrecheck(std::string& argument);
         void MoneyInsertionNotify(std::string& argument);
+        void TicketPaymentCheck(std::string& argument);
+        void MoneyGiveBack(std::string& argument);
+        bool ChangePosibilityForDebit();
+        void CreateMoneySet(std::string & argument);
+        void CompleteProcessing(std::string& message);
 };
 

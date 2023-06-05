@@ -13,7 +13,8 @@ class CashLoader : public cl_base
         void MoneyInsertionHandler(std::string command);
         void MoneyInsertionConfirmation(std::string& argument);
         int DebitSum();
-        int CalculateSum();
-        void NotifyInsertion(std::string& message);
+        void DebitSumSignal(std::string& message);
+        void MoneyTakeOut(std::string& message);
+        void CompleteProcessing(std::string& message);
 };
 

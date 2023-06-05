@@ -10,5 +10,6 @@ class ChangeExtruder : public cl_base
 		ChangeExtruder(cl_base* parent, std::string name);
 		void ChangeExtruder::ChangeInformation(std::string command);
 		void CollectChangeInfo(std::string& message);
+		void ChangeCalculation(std::string& argument);
 };
 

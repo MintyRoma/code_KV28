@@ -22,3 +22,13 @@ void ChangeExtruder::CollectChangeInfo(std::string& message)
 	(controller->*info_m)(argument);
 	message += argument;
 }
+
+void ChangeExtruder::ChangeCalculation(std::string& argument)
+{
+	int change = std::stoi(argument);
+	cl_base* controller = this->find_by_filter((std::string)"//" + CONTROLLERDEVICE);
+	SIGNAL_POINTER info_m = GET_SIGNAL_POINTER(Controller::CreateMoneySet);
+	std::string detalize;
+	(controller->*info_m)(argument);
+	argument = "Take the change: "+std::to_string(change)+" =" + argument;
+}

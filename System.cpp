@@ -47,8 +47,12 @@ void System::build_tree_objects()
     inptdev->create_link(GET_SIGNAL_POINTER(InputDevice::CommandRead), GET_HANDLER_POINTER(CashLoader::MoneyInsertionHandler), cashdr);
     cashdr->create_link(GET_SIGNAL_POINTER(CashLoader::MoneyInsertionConfirmation), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), cashdr);
     ctrldev->create_link(GET_SIGNAL_POINTER(Controller::MoneyInsertionNotify), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
-
-
+    ctrldev->create_link(GET_SIGNAL_POINTER(Controller::InsertMoneyPrecheck), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+    ctrldev->create_link(GET_SIGNAL_POINTER(Controller::TicketPaymentCheck), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+    cashdr->create_link(GET_SIGNAL_POINTER(CashLoader::MoneyTakeOut), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+    ctrldev->create_link(GET_SIGNAL_POINTER(Controller::CompleteProcessing), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+    changedr->create_link(GET_SIGNAL_POINTER(ChangeExtruder::ChangeCalculation), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
+    cashdr->create_link(GET_SIGNAL_POINTER(CashLoader::CompleteProcessing), GET_HANDLER_POINTER(ScreenDevice::PrintInformation), screendev);
     //Init
     inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "InitSessions");
     inptdev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead), "FillSeats");
