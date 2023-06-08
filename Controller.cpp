@@ -78,7 +78,7 @@ void Controller::GetCashInfo(std::string& argument)
 	for (std::map<int, int>::iterator iter = CashDrawer.begin(); iter != CashDrawer.end(); iter++)
 	{
 		if (iter->first == 1000 && argument == "Change") break;
-		if (iter->second!=0)info += " " + std::to_string(iter->first) + ":" + std::to_string(iter->second) + ";";
+		if (iter->second != 0)info += " " + std::to_string(iter->first) + ":" + std::to_string(iter->second) + ";";
 	}
 	argument = info;
 }
@@ -110,9 +110,9 @@ void Controller::GetChangeSum(std::string& argument)
 
 void Controller::TicketReservationCommand(std::string command)
 {
-	if (command.substr(0, ((std::string)"Tickets").size()) == "Tickets" && this->mode==TicketSelection)
+	if (command.substr(0, ((std::string)"Tickets").size()) == "Tickets" && this->mode == TicketSelection)
 	{
-		this->send_data(GET_SIGNAL_POINTER(Controller::ReserveTicket), command.substr(((std::string)"Tickets").size()+1));
+		this->send_data(GET_SIGNAL_POINTER(Controller::ReserveTicket), command.substr(((std::string)"Tickets").size() + 1));
 	}
 }
 
@@ -141,15 +141,14 @@ void Controller::ReserveTicket(std::string& argument)
 	Session* ses = Timetable[session - 1];
 	if (ses->amount >= amount)
 	{
-		argument = "Number of tickets : " + std::to_string(reserved_amount) + "; Ticket price : " + std::to_string(reserved_amount * ses->price);
+		argument = "Number of tickets: " + std::to_string(reserved_amount) + "; Ticket price: " + std::to_string(reserved_amount * ses->price);
 		mode = MoneyInsertion;
-		if (!ChangePosibilityForDebit(reserved_session->price*amount))
+		if (!ChangePosibilityForDebit(reserved_session->price * amount))
 		{
 			argument = "Take the money back, no change";
 			reserved_session = nullptr;
 			reserved_amount = 0;
 			mode = TicketSelection;
-			argument+= "\nReady to work";
 		}
 	}
 	else
@@ -159,14 +158,13 @@ void Controller::ReserveTicket(std::string& argument)
 		reserved_session = nullptr;
 		reserved_amount = 0;
 		mode = TicketSelection;
-		argument = "\nReady to work";
 	}
-	
+
 }
 
 bool Controller::ChangePosibilityForDebit(int sum)
 {
-	int need = sum - (reserved_amount*reserved_session->price);
+	int need = sum - (reserved_amount * reserved_session->price);
 	if (need < 0) return true;
 	for (std::map<int, int>::reverse_iterator iter = CashDrawer.rbegin(); iter != CashDrawer.rend(); iter++)
 	{
@@ -187,7 +185,7 @@ void Controller::InsertionPrecheck(std::string& argument)
 	if (mode == MoneyInsertion)
 	{
 		int sum = std::stoi(argument);
-		if (!ChangePosibilityForDebit(sum*2))
+		if (!ChangePosibilityForDebit(sum * 2))
 		{
 			this->send_data(GET_SIGNAL_POINTER(Controller::Rejection), "");
 		}
@@ -262,8 +260,8 @@ void Controller::StartProcessing(std::string& argument)
 		{
 			cl_base* ticketprinter = this->find_by_filter(TICKETPRINTER);
 			ticketprinter->send_data(GET_SIGNAL_POINTER(TicketPrinter::GiveTicketsSignal), std::to_string(reserved_amount));
-			std::string change = CreateChangeSet(sum-reserved_session->price*reserved_amount);
-			if(change!="")change = std::to_string(sum - (reserved_amount * reserved_session->price)) + " = " + change;
+			std::string change = CreateChangeSet(sum - reserved_session->price * reserved_amount);
+			if (change != "")change = std::to_string(sum - (reserved_amount * reserved_session->price)) + " =" + change;
 			cl_base* changeextruder = this->find_by_filter(CHANGEEXTRUDER);
 			changeextruder->send_data(GET_SIGNAL_POINTER(ChangeExtruder::ChangeCalculation), change);
 			this->send_data(GET_SIGNAL_POINTER(Controller::CompleteProcessing), "");
@@ -297,7 +295,7 @@ std::string Controller::CreateChangeSet(int sum)
 	std::string new_mes;
 	for (std::map<int, int>::reverse_iterator iter = cashset.rbegin(); iter != cashset.rend(); iter++)
 	{
-		if(iter->second!=0)new_mes += " " + std::to_string(iter->first) + " * " + std::to_string(iter->second) + " rub.";
+		if (iter->second != 0)new_mes += " " + std::to_string(iter->first) + " * " + std::to_string(iter->second) + " rub.";
 		CashDrawer[iter->first] -= iter->second;
 	}
 	return new_mes;
@@ -317,12 +315,12 @@ void Controller::NumberOfTicketsCommand(std::string command)
 	}
 }
 
-void Controller::ShowTickets(std::string & message)
+void Controller::ShowTickets(std::string& message)
 {
-	std::string new_message = "Number of tickets:";
-	for (int i = 0;i<Timetable.size();i++)
+	std::string new_message = "Number of tickets: ";
+	for (int i = 0; i < Timetable.size(); i++)
 	{
-		if (Timetable[i]->amount!=0)new_message += " (" + std::to_string(i + 1) + ":" + std::to_string(Timetable[i]->amount) + ")";
+		if (Timetable[i]->amount != 0)new_message += " (" + std::to_string(i + 1) + ":" + std::to_string(Timetable[i]->amount) + ")";
 	}
 	message = new_message;
 }
