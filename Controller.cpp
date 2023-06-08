@@ -2,7 +2,7 @@
 
 Controller::Controller(cl_base* parent, std::string name) :cl_base(parent, name)
 {
-
+	CashDrawer = { { 5,0 }, { 10,0 }, { 50,0 }, { 100,0 }, { 200,0 }, { 500,0 }, { 1000,0 } };
 }
 
 void Controller::InitSessions(std::string command)

@@ -77,8 +77,8 @@ int System::exec_app()
     cl_base* input_dev = this->find_by_filter((std::string)"//"+INPUTDEVICE);
     while (true)
     {
-        input_dev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead),"");
-        tact++;
+		input_dev->send_data(GET_SIGNAL_POINTER(InputDevice::CommandRead),"");
+		tact++;
     }
     return 0;
 }
@@ -87,12 +87,12 @@ void System::ReadyState(std::string command)
 {
     if (command.substr(0, ((std::string)"Ready").size()) == "Ready")
     {
-        std::string argument = command.substr(((std::string)"Ready").size());
-        if (argument != "End of settings")
-        {
-            exit(0);
-        }
-        this->send_data(GET_SIGNAL_POINTER(System::ConfirmReadiness), "");
+		std::string argument = command.substr(((std::string)"Ready").size());
+		if (argument != "End of settings")
+		{
+		    exit(0);
+		}
+		this->send_data(GET_SIGNAL_POINTER(System::ConfirmReadiness), "");
     }
 }
 
@@ -105,8 +105,8 @@ void System::ExitCommand(std::string command)
 {
     if (command == "Turn off the system")
     {
-        this->send_data(GET_SIGNAL_POINTER(System::ConfirmExit), "");
-        exit(0);
+		this->send_data(GET_SIGNAL_POINTER(System::ConfirmExit), "");
+		exit(0);
     }
 }
 
@@ -119,7 +119,7 @@ void System::StatusCommandHandler(std::string command)
 {
     if (command == "System status")
     {
-        this->send_data(GET_SIGNAL_POINTER(System::CollectStatusInfo), "");
+		this->send_data(GET_SIGNAL_POINTER(System::CollectStatusInfo), "");
     }
 }
 
@@ -143,7 +143,7 @@ void System::ShowTreeCommandHandler(std::string command)
 {
     if (command == "SHOWTREE")
     {
-        this->send_data(GET_SIGNAL_POINTER(System::ShowTree), "");
+		this->send_data(GET_SIGNAL_POINTER(System::ShowTree), "");
     }
 }
 

@@ -6,9 +6,9 @@ class InputDevice: public cl_base{
     private:
 
     public:
-        InputDevice(cl_base* parent, std::string name);
+		InputDevice(cl_base* parent, std::string name);
 
-        void CommandRead(std::string& result);
+		void CommandRead(std::string& result);
 
 };
 

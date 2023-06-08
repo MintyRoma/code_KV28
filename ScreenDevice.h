@@ -8,9 +8,9 @@ class ScreenDevice: public cl_base{
     private:
 
     public:
-        ScreenDevice(cl_base* parent, std::string name);
+		ScreenDevice(cl_base* parent, std::string name);
 
-        void PrintInformation(std::string info);
+		void PrintInformation(std::string info);
 };
 
 #endif
