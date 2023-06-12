@@ -143,7 +143,7 @@ void Controller::ReserveTicket(std::string& argument)
 	{
 		argument = "Number of tickets: " + std::to_string(reserved_amount) + "; Ticket price: " + std::to_string(reserved_amount * ses->price);
 		mode = MoneyInsertion;
-		if (!ChangePosibilityForDebit(reserved_session->price * amount))
+		if (!ChangePosibilityForDebit(reserved_session->price * amount * 2))
 		{
 			argument = "Take the money back, no change";
 			reserved_session = nullptr;
