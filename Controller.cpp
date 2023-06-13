@@ -168,8 +168,6 @@ bool Controller::ChangePosibilityForDebit(int sum)
 	if (need < 0) return true;
 	for (std::map<int, int>::reverse_iterator iter = CashDrawer.rbegin(); iter != CashDrawer.rend(); iter++)
 	{
-		int nominal = iter->first;
-		int amount = iter->second;
 		if (need < iter->first || iter->first == 1000) continue;
 		for (int i = 0; iter->second > i; i++)
 		{
